@@ -13,7 +13,7 @@ from google.genai import types as genai_types
 
 logging.basicConfig(level=logging.INFO)
 
-BOT_TOKEN = 9186913801:AAESm9mt5iaKboWZAtiy8W7O5O0SMD9dW2o
+BOT_TOKEN = "9186913801:AAESm9mt5iaKboWZAtiy8W7O5O0SMD9dW2o"
 GEMINI_API_KEY = "AQ.Ab8RN6LkwHctTXnLNkVyk60ia_3Ji_XaB4xdzZbvhukdH-HNQ"
 CRYPTO_PAY_TOKEN = ""
 

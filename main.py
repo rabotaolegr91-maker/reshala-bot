@@ -7,7 +7,7 @@ from aiohttp import web
 from aiogram import Bot, Dispatcher, F, types
 from aiogram.filters import Command
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, LabeledPrice, PreCheckoutQuery
-from google import genai
+import google.generativeai as genai
 from google.genai import types as genai_types
 
 logging.basicConfig(level=logging.INFO)
@@ -26,7 +26,7 @@ PRO_USDT_PRICE = "2.5"
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
-client = genai.Client(api_key=GEMINI_API_KEY)
+genai.configure(api_key=GEMINI_API_KEY)
 
 # ================= БАЗА ДАННЫХ =================
 conn = sqlite3.connect("hvosty_pro.db", check_same_thread=False)
@@ -198,16 +198,15 @@ async def handle_photo(message: types.Message):
         await bot.download(photo, destination=file_io)
         image_bytes = file_io.getvalue()
 
-        caption = message.caption if message.caption else "Разбери этот скриншот по категориям."
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=[
-                genai_types.Part.from_bytes(data=image_bytes, mime_type="image/jpeg"),
-                caption
-            ],
-            config=genai_types.GenerateContentConfig(
-                system_instruction=get_system_instruction(mode)
-            )
+        response = genai.GenerativeModel(
+    model_name="gemini-2.5-flash",
+    system_instruction=get_system_instruction(mode)
+).generate_content(
+    [
+        genai.types.Part.from_bytes(data=image_bytes, mime_type="image/jpeg"),
+        caption
+    ]
+        )
         )
         increment_requests(message.from_user.id)
         await wait_msg.edit_text(response.text)
@@ -227,16 +226,15 @@ async def handle_voice(message: types.Message):
         await bot.download(voice, destination=file_io)
         audio_bytes = file_io.getvalue()
 
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=[
-                genai_types.Part.from_bytes(data=audio_bytes, mime_type="audio/ogg"),
-                "Расшифруй это голосовое сообщение и разложи суть по 4 категориям."
-            ],
-            config=genai_types.GenerateContentConfig(
-                system_instruction=get_system_instruction(mode)
-            )
-        )
+         response = genai.GenerativeModel(
+    model_name="gemini-2.5-flash",
+    system_instruction=get_system_instruction(mode)
+).generate_content(
+    [
+        genai.types.Part.from_bytes(data=audio_bytes, mime_type="audio/ogg"),
+        "Расшифруй это голосовое сообщение и разложи суть по 4 категориям: Мои хвосты, Должники/динамисты, Деньги, Идеи."
+    ]
+         )
         increment_requests(message.from_user.id)
         await wait_msg.edit_text(response.text)
     except Exception as e:

@@ -226,15 +226,15 @@ async def handle_voice(message: types.Message):
         await bot.download(voice, destination=file_io)
         audio_bytes = file_io.getvalue()
 
-         response = genai.GenerativeModel(
-    model_name="gemini-2.5-flash",
-    system_instruction=get_system_instruction(mode)
-).generate_content(
-    [
-        genai.types.Part.from_bytes(data=audio_bytes, mime_type="audio/ogg"),
-        "Расшифруй это голосовое сообщение и разложи суть по 4 категориям: Мои хвосты, Должники/динамисты, Деньги, Идеи."
-    ]
-         )
+        response = genai.GenerativeModel(
+            model_name="gemini-2.5-flash",
+            system_instruction=get_system_instruction(mode)
+        ).generate_content(
+            [
+                genai.types.Part.from_bytes(data=audio_bytes, mime_type="audio/ogg"),
+               "Расшифруй это голосовое сообщение и разложи суть по 4 категориям: Мои хвосты, Должники/динамисты, Деньги, Идеи."
+            ]
+        )
         increment_requests(message.from_user.id)
         await wait_msg.edit_text(response.text)
     except Exception as e:

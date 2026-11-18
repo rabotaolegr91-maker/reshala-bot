@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO)
 # Вставь свой актуальный токен от @BotFather в кавычки:
 BOT_TOKEN = "9186913801:AAESm9mt5iaKboWZAtiy8W7O5O0SMD9dW2o"
 # Вставь свой ключ от Google AI Studio (Gemini):
-GEMINI_API_KEY = "ТВОЙ_GEMINI_API_KEY"
+GEMINI_API_KEY = "AQ.Ab8RN6LkwHctTXnLNkVyk6Oia_3Ji_XaB4xdzZbxvhukdH-HNQ"
 # Токен из @CryptoBot (раздел Crypto Pay -> Создать приложение), если принимаешь USDT:
 CRYPTO_PAY_TOKEN = ""
 

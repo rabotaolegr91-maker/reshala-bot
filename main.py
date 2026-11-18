@@ -207,7 +207,7 @@ async def handle_photo(message: types.Message):
         caption
     ]
         )
-        )
+        
         increment_requests(message.from_user.id)
         await wait_msg.edit_text(response.text)
     except Exception as e:

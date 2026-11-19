@@ -186,7 +186,7 @@ async def check_limits(message: types.Message) -> bool:
         return False
     return True
 
-@dp.message(F.photo)
+    @dp.message(F.photo)
 async def handle_photo(message: types.Message):
     if not await check_limits(message):
         return
@@ -197,7 +197,7 @@ async def handle_photo(message: types.Message):
         file_io = io.BytesIO()
         await bot.download(photo, destination=file_io)
         image_bytes = file_io.getvalue()
-caption = message.caption or "Опиши что на картинке"
+        caption = message.caption or "Опиши что на картинке"
         
         response = genai.GenerativeModel(
             model_name="gemini-2.5-flash",

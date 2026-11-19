@@ -187,7 +187,7 @@ async def check_limits(message: types.Message) -> bool:
     return True
 
     @dp.message(F.photo)
-async def handle_photo(message: types.Message):
+    async def handle_photo(message: types.Message):
     if not await check_limits(message):
         return
     mode, _, _ = get_user(message.from_user.id)

@@ -197,19 +197,25 @@ async def handle_photo(message: types.Message):
         file_io = io.BytesIO()
         await bot.download(photo, destination=file_io)
         image_bytes = file_io.getvalue()
-
+caption = message.caption or "Опиши что на картинке"
+        
         response = genai.GenerativeModel(
-    model_name="gemini-2.5-flash",
-    system_instruction=get_system_instruction(mode)
-).generate_content(
-    [
-        genai.types.Part.from_bytes(data=image_bytes, mime_type="image/jpeg"),
-        caption
-    ]
+            model_name="gemini-2.5-flash",
+            system_instruction=get_system_instruction(mode)
+        ).generate_content(
+            [
+                {"mime_type": "image/jpeg", "data": image_bytes},
+                caption
+            ]
         )
         
         increment_requests(message.from_user.id)
         await wait_msg.edit_text(response.text)
+        
+        
+        
+        
+
     except Exception as e:
         logging.error(f"Photo error: {e}")
         await wait_msg.edit_text("⚠️ Не удалось разобрать изображение. Попробуй прислать еще раз.")

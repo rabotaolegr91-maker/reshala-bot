@@ -8,7 +8,6 @@ from aiogram import Bot, Dispatcher, F, types
 from aiogram.filters import Command
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, LabeledPrice, PreCheckoutQuery
 import google.generativeai as genai
-from google.genai import types as genai_types
 
 logging.basicConfig(level=logging.INFO)
 
@@ -186,8 +185,8 @@ async def check_limits(message: types.Message) -> bool:
         return False
     return True
 
-    @dp.message(F.photo)
-    async def handle_photo(message: types.Message):
+@dp.message(F.photo)
+async def handle_photo(message: types.Message):
     if not await check_limits(message):
         return
     mode, _, _ = get_user(message.from_user.id)
@@ -198,7 +197,7 @@ async def check_limits(message: types.Message) -> bool:
         await bot.download(photo, destination=file_io)
         image_bytes = file_io.getvalue()
         caption = message.caption or "Опиши что на картинке"
-        
+
         response = genai.GenerativeModel(
             model_name="gemini-2.5-flash",
             system_instruction=get_system_instruction(mode)
@@ -208,14 +207,9 @@ async def check_limits(message: types.Message) -> bool:
                 caption
             ]
         )
-        
+
         increment_requests(message.from_user.id)
         await wait_msg.edit_text(response.text)
-        
-        
-        
-        
-
     except Exception as e:
         logging.error(f"Photo error: {e}")
         await wait_msg.edit_text("⚠️ Не удалось разобрать изображение. Попробуй прислать еще раз.")
@@ -237,10 +231,11 @@ async def handle_voice(message: types.Message):
             system_instruction=get_system_instruction(mode)
         ).generate_content(
             [
-                genai.types.Part.from_bytes(data=audio_bytes, mime_type="audio/ogg"),
-               "Расшифруй это голосовое сообщение и разложи суть по 4 категориям: Мои хвосты, Должники/динамисты, Деньги, Идеи."
+                {"mime_type": "audio/ogg", "data": audio_bytes},
+                "Расшифруй это голосовое сообщение и разложи суть по 4 категориям: Мои хвосты, Должники/динамисты, Деньги, Идеи."
             ]
         )
+
         increment_requests(message.from_user.id)
         await wait_msg.edit_text(response.text)
     except Exception as e:
@@ -254,13 +249,11 @@ async def handle_text(message: types.Message):
     mode, _, _ = get_user(message.from_user.id)
     wait_msg = await message.answer("⚡️ Раскидываю задачу...")
     try:
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=message.text,
-            config=genai_types.GenerateContentConfig(
-                system_instruction=get_system_instruction(mode)
-            )
-        )
+        response = genai.GenerativeModel(
+            model_name="gemini-2.5-flash",
+            system_instruction=get_system_instruction(mode)
+        ).generate_content(message.text)
+
         increment_requests(message.from_user.id)
         await wait_msg.edit_text(response.text)
     except Exception as e:

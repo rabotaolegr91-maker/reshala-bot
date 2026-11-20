@@ -199,7 +199,7 @@ async def handle_photo(message: types.Message):
         caption = message.caption or "Опиши что на картинке"
 
         response = genai.GenerativeModel(
-            model_name="gemini-2.5-flash",
+            model_name="gemini-3.8-flash",
             system_instruction=get_system_instruction(mode)
         ).generate_content(
             [
@@ -227,7 +227,7 @@ async def handle_voice(message: types.Message):
         audio_bytes = file_io.getvalue()
 
         response = genai.GenerativeModel(
-            model_name="gemini-2.5-flash",
+            model_name="",
             system_instruction=get_system_instruction(mode)
         ).generate_content(
             [
@@ -250,7 +250,7 @@ async def handle_text(message: types.Message):
     wait_msg = await message.answer("⚡️ Раскидываю задачу...")
     try:
         response = genai.GenerativeModel(
-            model_name="gemini-2.5-flash",
+            model_name="gemini-3.8-flash",
             system_instruction=get_system_instruction(mode)
         ).generate_content(message.text)
 
